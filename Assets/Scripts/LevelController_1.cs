@@ -4,22 +4,27 @@ using UnityEngine;
 
 public class LevelController_1 : MonoBehaviour
 {
+    # region Level Parameter
+    public GameController gameController;
     public CardHandler cardHandler;
-
-    private bool gameFinish = false;
-
-    public GameObject[] levelCards;
-    public int[] availablePlace;
 
     public int startX;
     public int startY;
 
-    public GameObject parentDish;
-    public GameObject dishPrefab;
-    public GameObject[] ingredientsPrefab;
+    public GameObject[] chef;
+    public GameObject[] ingredientStep;
 
-    private GameObject dish;
-    private GameObject ingredients;
+    public GameObject dish;
+    public GameObject basket;
+
+    public GameObject[] levelCards;
+    public GameObject[] hints;
+    public int[] availablePlace;
+    public int[] answer;
+
+    private bool gameFail;
+
+    # endregion
 
     // Start is called before the first frame update
     void Start()
@@ -27,37 +32,132 @@ public class LevelController_1 : MonoBehaviour
         cardHandler.setCanPlaceCard(availablePlace, true);
         cardHandler.setCards(levelCards);
 
-        dish = Instantiate(dishPrefab, parentDish.transform);
-        dish.transform.localPosition = new Vector3(
-            startX * GameParameter.stageGap,
-            startY * GameParameter.stageGap,
-            0);
-
-        for (int i = 0; i < ingredientsPrefab.Length; i++)
-        {
-            ingredients = Instantiate(ingredientsPrefab[i], dish.transform);
-            ingredients.transform.localPosition = new Vector3(0, 0, 0);
-        }
+        ResetDish();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey("w"))
+
+    }
+
+    public void StartCooking()
+    {
+        gameFail = false;
+        SetHints(false);
+        Debug.Log("Game Start!");
+        StartCoroutine(CookingProcess());
+    }
+
+    IEnumerator CookingProcess()
+    {
+        if (!gameFail)
         {
-            dish.transform.localPosition += new Vector3(0, GameParameter.dishSpeed, 0);
+            var step = StartCoroutine(DishMove("Right", 3));
+            yield return step;
         }
-        if (Input.GetKey("a"))
+
+        if (!gameFail)
         {
-            dish.transform.localPosition += new Vector3(-GameParameter.dishSpeed, 0, 0);
+            var step = StartCoroutine(CheckProcess(0));
+            yield return step;
         }
-        if (Input.GetKey("s"))
+
+        if (!gameFail)
         {
-            dish.transform.localPosition += new Vector3(0, -GameParameter.dishSpeed, 0);
+            var step = StartCoroutine(DishMove("Right", 2));
+            yield return step;
         }
-        if (Input.GetKey("d"))
+
+        if (!gameFail)
         {
-            dish.transform.localPosition += new Vector3(GameParameter.dishSpeed, 0, 0);
+            var step = StartCoroutine(CheckProcess(1));
+            yield return step;
+        }
+
+        if (!gameFail)
+        {
+            var step = StartCoroutine(DishMove("Right", 3));
+            yield return step;
+        }
+
+        if (!gameFail)
+        {
+            FinishCooking();
+        }
+    }
+
+    IEnumerator DishMove(string direction, int step)
+    {
+        for (int i = 0; i < step * 75; i++)
+        {
+            yield return new WaitForSeconds(0.01f);
+            switch (direction)
+            {
+                case "Up":
+                    dish.transform.localPosition += new Vector3(0f, 0.1f, 0f);
+                    break;
+                case "Left":
+                    dish.transform.localPosition += new Vector3(-0.1f, 0f, 0f);
+                    break;
+                case "Down":
+                    dish.transform.localPosition += new Vector3(0f, -0.1f, 0f);
+                    break;
+                case "Right":
+                    dish.transform.localPosition += new Vector3(0.1f, 0f, 0f);
+                    break;
+                default:
+                    Debug.Log("Move direction error");
+                    break;
+            }
+        }
+    }
+
+    IEnumerator CheckProcess(int chefNum)
+    {
+        if (cardHandler.stackSensing[availablePlace[chefNum]] == answer[chefNum])
+        {
+            ingredientStep[chefNum].SetActive(false);
+            chef[chefNum].SendMessage("StartAct");
+            yield return new WaitForSeconds(2f);
+            ingredientStep[chefNum + 1].SetActive(true);
+        }
+        else
+        {
+            FailCooking();
+        }
+    }
+
+    private void FinishCooking()
+    {
+        basket.SetActive(false);
+        Debug.Log("Game Finish!!!");
+        gameController.playing = false;
+    }
+
+    private void FailCooking()
+    {
+        gameFail = true;
+        gameController.playing = false;
+        cardHandler.setCardTrans = true;
+        SetHints(true);
+        ResetDish();
+        Debug.Log("Game Over...");
+    }
+
+    private void ResetDish()
+    {
+        dish.transform.localPosition = new Vector3(
+            startX * GameParameter.stageGap,
+            startY * GameParameter.stageGap,
+            0);
+    }
+
+    private void SetHints(bool onOrOff)
+    {
+        for (int i = 0; i < hints.Length; i++)
+        {
+            hints[i].SetActive(onOrOff);
         }
     }
 }

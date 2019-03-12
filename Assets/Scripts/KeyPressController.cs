@@ -9,6 +9,12 @@ public class KeyPressController : MonoBehaviour
     public GameObject loopCard3;
     public GameObject cookCard;
 
+    public GameObject hint1;
+    public GameObject hint2;
+
+    public SpriteRenderer loopCard3Sprite;
+    public SpriteRenderer cookCardSprite;
+
     public GameObject hightPathParent;
     public SpriteRenderer[] hightPath;
 
@@ -35,6 +41,10 @@ public class KeyPressController : MonoBehaviour
         if (Input.GetKeyUp("p"))
         {
             StartCoroutine(PathShine(75));
+            loopCard3Sprite.color = new Color(1f, 1f, 1f, 0.5f);
+            cookCardSprite.color = new Color(1f, 1f, 1f, 0.5f);
+            hint1.SetActive(false);
+            hint2.SetActive(false);
         }
 
         if (Input.GetKeyUp("1"))
@@ -59,22 +69,22 @@ public class KeyPressController : MonoBehaviour
 
         if (Input.GetKeyUp("w"))
         {
-            basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
+            //basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
             StartCoroutine(MoveUp(75));
         }
         if (Input.GetKeyUp("a"))
         {
-            basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 180f));
+            //basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 180f));
             StartCoroutine(MoveLeft(150));
         }
         if (Input.GetKeyUp("s"))
         {
-            basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 270f));
+            //basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 270f));
             StartCoroutine(MoveDown(75));
         }
         if (Input.GetKeyUp("d"))
         {
-            basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+            //basket.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
             StartCoroutine(MoveRight(75));
         }
 
@@ -108,7 +118,7 @@ public class KeyPressController : MonoBehaviour
     {
         for (int i = 0; i < step; i++)
         {
-            yield return new WaitForSeconds(0.03f);
+            yield return new WaitForSeconds(0.01f);
             dish.transform.localPosition += new Vector3(0f, 0.1f, 0f);
         }
     }
@@ -116,7 +126,7 @@ public class KeyPressController : MonoBehaviour
     {
         for (int i = 0; i < step; i++)
         {
-            yield return new WaitForSeconds(0.03f);
+            yield return new WaitForSeconds(0.01f);
             dish.transform.localPosition += new Vector3(-0.1f, 0f, 0f);
         }
     }
@@ -124,7 +134,7 @@ public class KeyPressController : MonoBehaviour
     {
         for (int i = 0; i < step; i++)
         {
-            yield return new WaitForSeconds(0.03f);
+            yield return new WaitForSeconds(0.01f);
             dish.transform.localPosition += new Vector3(0f, -0.1f, 0f);
         }
     }
@@ -132,7 +142,7 @@ public class KeyPressController : MonoBehaviour
     {
         for (int i = 0; i < step; i++)
         {
-            yield return new WaitForSeconds(0.03f);
+            yield return new WaitForSeconds(0.01f);
             dish.transform.localPosition += new Vector3(0.1f, 0f, 0f);
         }
     }

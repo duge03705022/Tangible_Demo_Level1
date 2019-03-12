@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class CardHandler : MonoBehaviour
 {
+    # region Card Parameter
+    public GameController gameController;
+    public bool setCardTrans;
+
     public GameObject parentTransform;
 
     public GameObject[] cards;
@@ -16,6 +20,8 @@ public class CardHandler : MonoBehaviour
     private GameObject[] cardInstance;
     public int[] lastStack;
     private bool[] hasPlaced;
+
+    # endregion
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +37,8 @@ public class CardHandler : MonoBehaviour
         lastStack = new int[GameParameter.blockNum];
         hasPlaced = new bool[GameParameter.blockNum];
 
+        setCardTrans = true;
+
         for (int i = 0; i < GameParameter.blockNum; i++)
         {
             canPlaceCard[i] = false;
@@ -40,11 +48,6 @@ public class CardHandler : MonoBehaviour
 
             hasPlaced[i] = false;
         }
-
-        //hasPlaced[8] = false;
-        //hasPlaced[42] = false;
-        //hasPlaced[43] = false;
-        //hasPlaced[44] = false;
     }
 
     // Update is called once per frame
@@ -53,7 +56,7 @@ public class CardHandler : MonoBehaviour
         updateCards();
     }
 
-    void updateCards()
+    private void updateCards()
     {
         for (int i = 0; i < GameParameter.blockNum; i++)
         {
@@ -65,10 +68,24 @@ public class CardHandler : MonoBehaviour
             {
                 destroyCard(i);
             }
+            
+            if (setCardTrans && gameController.playing && hasPlaced[i])
+            {
+                cardInstance[i].GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+            }
+            else if (setCardTrans && !gameController.playing && hasPlaced[i])
+            {
+                cardInstance[i].GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            }
+        }
+
+        if (setCardTrans)
+        {
+            setCardTrans = false;
         }
     }
 
-    void placeCard(int num)
+    private void placeCard(int num)
     {
         cardInstance[num] = Instantiate(cards[stackSensing[num]], parentTransform.transform);
         cardInstance[num].transform.localPosition = new Vector3(
@@ -79,7 +96,7 @@ public class CardHandler : MonoBehaviour
         lastStack[num] = stackSensing[num];
     }
 
-    void destroyCard(int num)
+    private void destroyCard(int num)
     {
         Destroy(cardInstance[num]);
         cardInstance[num] = null;
