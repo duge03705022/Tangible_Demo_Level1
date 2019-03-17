@@ -259,9 +259,6 @@ MonoBehaviour:
   - {fileID: 739460714}
   dish: {fileID: 1174596869}
   basket: {fileID: 135936859}
-  levelCards:
-  - {fileID: 8075274503316020918, guid: d99d6d5c91ccc8d4392dc31029908a2d, type: 3}
-  - {fileID: 2312327844900845317, guid: 7f4bdf2b075e8b14ebabe1cde9b9f22d, type: 3}
   hints:
   - {fileID: 1710531528}
   - {fileID: 1491140914}
@@ -1493,6 +1490,84 @@ Transform:
   m_Father: {fileID: 1579265810}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1190211956
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1190211960}
+  - component: {fileID: 1190211959}
+  - component: {fileID: 1190211958}
+  - component: {fileID: 1190211957}
+  m_Layer: 0
+  m_Name: RFIBManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1190211957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190211956}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46ca72fc4d472e24197a2466262bdaf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  portName: COM11
+  baudRate: 9600
+  a: []
+  sensor: 0
+--- !u!114 &1190211958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190211956}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60137e52a95311543b4e8d9f29dff62c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  portName: COM10
+  baudRate: 9600
+  a: []
+  sensor: 0
+--- !u!114 &1190211959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190211956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c6862d77a7dae4aacfde96c917eea7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardHandler: {fileID: 2054357258}
+--- !u!4 &1190211960
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190211956}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1280943711
 GameObject:
   m_ObjectHideFlags: 0
@@ -2144,9 +2219,18 @@ MonoBehaviour:
   gameController: {fileID: 2054357260}
   setCardTrans: 0
   parentTransform: {fileID: 795758187}
-  cards: []
+  cards:
+  - {fileID: 8075274503316020918, guid: d99d6d5c91ccc8d4392dc31029908a2d, type: 3}
+  - {fileID: 2312327844900845317, guid: 7f4bdf2b075e8b14ebabe1cde9b9f22d, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   canPlaceCard: 
-  stackSensing: 
   waitDestroy: 
   lastStack: 
 --- !u!114 &2054357259
@@ -2161,6 +2245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b09595720a96a5d48b2dde3a0be2e87c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  touchHandler: {fileID: 2054357259}
 --- !u!114 &2054357260
 MonoBehaviour:
   m_ObjectHideFlags: 0

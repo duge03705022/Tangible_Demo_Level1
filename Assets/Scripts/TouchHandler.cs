@@ -9,6 +9,8 @@ public class TouchHandler : MonoBehaviour
 
     # endregion
 
+    public TouchHandler touchHandler;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +27,13 @@ public class TouchHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown("p"))
+        {
+            touchHandler.touchSensing[25, 1] = true;
+        }
+        if (Input.GetKeyUp("p"))
+        {
+            touchHandler.touchSensing[25, 1] = false;
+        }
     }
 }

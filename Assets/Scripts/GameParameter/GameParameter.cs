@@ -6,6 +6,7 @@ public class GameParameter
 {
     public const int stageRow = 5;
     public const int stageCol = 9;
+    public const int maxHight = 3;
     public const int blockNum = stageRow * stageCol;
 
     public const int maxCardNum = 45;

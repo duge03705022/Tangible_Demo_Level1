@@ -13,7 +13,7 @@ public class CardHandler : MonoBehaviour
     public GameObject[] cards;
 
     public bool[] canPlaceCard;
-    public int[] stackSensing;
+    public int[,,] stackSensing;
 
     public bool[] waitDestroy;
 
@@ -26,10 +26,8 @@ public class CardHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cards = new GameObject[GameParameter.maxCardNum];
-
         canPlaceCard = new bool[GameParameter.blockNum];
-        stackSensing = new int[GameParameter.blockNum];
+        stackSensing = new int[GameParameter.stageCol, GameParameter.stageRow, GameParameter.maxHight];
 
         waitDestroy = new bool[GameParameter.blockNum];
 
@@ -42,11 +40,13 @@ public class CardHandler : MonoBehaviour
         for (int i = 0; i < GameParameter.blockNum; i++)
         {
             canPlaceCard[i] = false;
-            stackSensing[i] = -1;
-
             waitDestroy[i] = false;
-
             hasPlaced[i] = false;
+
+            for (int k = 0; k < GameParameter.maxHight; k++)
+            {
+                stackSensing[i % GameParameter.stageCol, i / GameParameter.stageCol, k] = -1;
+            }
         }
     }
 
@@ -60,11 +60,11 @@ public class CardHandler : MonoBehaviour
     {
         for (int i = 0; i < GameParameter.blockNum; i++)
         {
-            if (stackSensing[i] != -1 && canPlaceCard[i] && !hasPlaced[i])
+            if (stackSensing[i % GameParameter.stageCol, i / GameParameter.stageCol, 0] != -1 && canPlaceCard[i] && !hasPlaced[i])
             {
                 placeCard(i);
             }
-            else if ((waitDestroy[i] || stackSensing[i] == -1) && hasPlaced[i])
+            else if ((waitDestroy[i] || stackSensing[i % GameParameter.stageCol, i / GameParameter.stageCol, 0] == -1) && hasPlaced[i])
             {
                 destroyCard(i);
             }
@@ -87,13 +87,13 @@ public class CardHandler : MonoBehaviour
 
     private void placeCard(int num)
     {
-        cardInstance[num] = Instantiate(cards[stackSensing[num]], parentTransform.transform);
+        cardInstance[num] = Instantiate(cards[stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0]], parentTransform.transform);
         cardInstance[num].transform.localPosition = new Vector3(
             num % GameParameter.stageCol * GameParameter.stageGap,
             num / GameParameter.stageCol * GameParameter.stageGap,
             0);
         hasPlaced[num] = true;
-        lastStack[num] = stackSensing[num];
+        lastStack[num] = stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0];
     }
 
     private void destroyCard(int num)
@@ -101,9 +101,9 @@ public class CardHandler : MonoBehaviour
         Destroy(cardInstance[num]);
         cardInstance[num] = null;
         hasPlaced[num] = false;
-        if (stackSensing[num] == lastStack[num])
+        if (stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0] == lastStack[num])
         {
-            stackSensing[num] = -1;
+            stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0] = -1;
         }
         waitDestroy[num] = false;
     }
@@ -113,14 +113,6 @@ public class CardHandler : MonoBehaviour
         for (int i = 0; i < series.Length; i++)
         {
             canPlaceCard[series[i]] = TorF;
-        }
-    }
-
-    public void setCards(GameObject[] series)
-    {
-        for (int i = 0; i < series.Length; i++)
-        {
-            cards[i] = series[i];
         }
     }
 }

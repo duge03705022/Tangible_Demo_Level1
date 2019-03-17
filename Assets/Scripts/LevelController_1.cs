@@ -17,7 +17,7 @@ public class LevelController_1 : MonoBehaviour
     public GameObject dish;
     public GameObject basket;
 
-    public GameObject[] levelCards;
+    //public GameObject[] levelCards;
     public GameObject[] hints;
     public int[] availablePlace;
     public int[] answer;
@@ -30,7 +30,6 @@ public class LevelController_1 : MonoBehaviour
     void Start()
     {
         cardHandler.setCanPlaceCard(availablePlace, true);
-        cardHandler.setCards(levelCards);
 
         ResetDish();
     }
@@ -53,32 +52,27 @@ public class LevelController_1 : MonoBehaviour
     {
         if (!gameFail)
         {
-            var step = StartCoroutine(DishMove("Right", 3));
-            yield return step;
+            yield return StartCoroutine(DishMove("Right", 3));
         }
 
         if (!gameFail)
         {
-            var step = StartCoroutine(CheckProcess(0));
-            yield return step;
+            yield return StartCoroutine(CheckProcess(0));
         }
 
         if (!gameFail)
         {
-            var step = StartCoroutine(DishMove("Right", 2));
-            yield return step;
+            yield return StartCoroutine(DishMove("Right", 2));
         }
 
         if (!gameFail)
         {
-            var step = StartCoroutine(CheckProcess(1));
-            yield return step;
+            yield return StartCoroutine(CheckProcess(1));
         }
 
         if (!gameFail)
         {
-            var step = StartCoroutine(DishMove("Right", 3));
-            yield return step;
+            yield return StartCoroutine(DishMove("Right", 3));
         }
 
         if (!gameFail)
@@ -115,7 +109,7 @@ public class LevelController_1 : MonoBehaviour
 
     IEnumerator CheckProcess(int chefNum)
     {
-        if (cardHandler.stackSensing[availablePlace[chefNum]] == answer[chefNum])
+        if (cardHandler.stackSensing[availablePlace[chefNum] % GameParameter.stageCol, availablePlace[chefNum] / GameParameter.stageCol, 0] == answer[chefNum])
         {
             ingredientStep[chefNum].SetActive(false);
             chef[chefNum].SendMessage("StartAct");
@@ -124,7 +118,7 @@ public class LevelController_1 : MonoBehaviour
         }
         else
         {
-            FailCooking();
+            yield return StartCoroutine(FailCooking());
         }
     }
 
@@ -132,21 +126,29 @@ public class LevelController_1 : MonoBehaviour
     {
         basket.SetActive(false);
         Debug.Log("Game Finish!!!");
+
         gameController.playing = false;
+        cardHandler.setCardTrans = true;
+        SetHints(true);
     }
 
-    private void FailCooking()
+    IEnumerator FailCooking()
     {
+        Debug.Log("Game Over...");
+        yield return new WaitForSeconds(1f);
+
         gameFail = true;
         gameController.playing = false;
         cardHandler.setCardTrans = true;
         SetHints(true);
         ResetDish();
-        Debug.Log("Game Over...");
     }
 
     private void ResetDish()
     {
+        ingredientStep[0].SetActive(true);
+        ingredientStep[1].SetActive(false);
+        ingredientStep[2].SetActive(false);
         dish.transform.localPosition = new Vector3(
             startX * GameParameter.stageGap,
             startY * GameParameter.stageGap,

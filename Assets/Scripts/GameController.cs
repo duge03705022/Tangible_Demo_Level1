@@ -26,15 +26,6 @@ public class GameController : MonoBehaviour
     void Update()
     {
         ifPlay();
-
-        if (Input.GetKeyDown("p"))
-        {
-            touchHandler.touchSensing[25, 1] = true;
-        }
-        if (Input.GetKeyUp("p"))
-        {
-            touchHandler.touchSensing[25, 1] = false;
-        }
     }
 
     private void ifPlay()
