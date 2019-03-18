@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelController_1 : MonoBehaviour
+public class LevelControllerStage1 : MonoBehaviour
 {
     # region Level Parameter
     public RFIBManager rFIBManager;
@@ -19,9 +19,8 @@ public class LevelController_1 : MonoBehaviour
     public GameObject dish;
     public GameObject basket;
 
-    //public GameObject[] levelCards;
     public GameObject[] hints;
-    //public int[] availablePlace;
+    public GameObject[] bugs;
     public int[] answer;
 
     private bool gameFail;
@@ -31,8 +30,6 @@ public class LevelController_1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //cardHandler.SetCanPlaceCard(availablePlace, true);
-
         ResetDish();
     }
 
@@ -46,8 +43,28 @@ public class LevelController_1 : MonoBehaviour
     {
         gameFail = false;
         SetHints(false);
+        SetBugs(false);
+        cardHandler.SetCardTrans(true);
         Debug.Log("Game Start!");
         StartCoroutine(CookingProcess());
+    }
+
+    private void FinishCooking()
+    {
+        basket.SetActive(false);
+        Debug.Log("Game Finish!!!");
+
+        gameController.playing = false;
+        cardHandler.SetCardTrans(false);
+        SetHints(true);
+    }
+
+    private void FailCooking()
+    {
+        gameFail = true;
+        gameController.playing = false;
+        cardHandler.SetCardTrans(false);
+        ResetDish();
     }
 
     IEnumerator CookingProcess()
@@ -121,30 +138,10 @@ public class LevelController_1 : MonoBehaviour
         }
         else
         {
-            yield return StartCoroutine(FailCooking());
+            SetBug(chefNum, true);
+            yield return new WaitForSeconds(1.5f);
+            FailCooking();
         }
-    }
-
-    private void FinishCooking()
-    {
-        basket.SetActive(false);
-        Debug.Log("Game Finish!!!");
-
-        gameController.playing = false;
-        //cardHandler.setCardTrans = true;
-        SetHints(true);
-    }
-
-    IEnumerator FailCooking()
-    {
-        Debug.Log("Game Over...");
-        yield return new WaitForSeconds(1f);
-
-        gameFail = true;
-        gameController.playing = false;
-        //cardHandler.setCardTrans = true;
-        SetHints(true);
-        ResetDish();
     }
 
     private void ResetDish()
@@ -156,13 +153,29 @@ public class LevelController_1 : MonoBehaviour
             startX * GameParameter.stageGap,
             startY * GameParameter.stageGap,
             0);
+        
+        SetHints(true);
     }
 
-    private void SetHints(bool onOrOff)
+    private void SetHints(bool TorF)
     {
         for (int i = 0; i < hints.Length; i++)
         {
-            hints[i].SetActive(onOrOff);
+            hints[i].SetActive(TorF);
+        }
+    }
+
+    public void SetBug(int bugId, bool TorF)
+    {
+        bugs[bugId].SetActive(TorF);
+        Debug.Log("Game Over...");
+    }
+
+    public void SetBugs(bool TorF)
+    {
+        for (int i = 0; i < bugs.Length; i++)
+        {
+            bugs[i].SetActive(TorF);
         }
     }
 }

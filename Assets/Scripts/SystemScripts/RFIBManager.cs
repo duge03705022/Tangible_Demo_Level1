@@ -14,20 +14,20 @@ public class RFIBManager : MonoBehaviour
     public BlockController blockController;
 
     #region RFIB parameter
-    short[] EnableAntenna = {1, 2, 3, 4};       // reader port
-    string ReaderIP = "192.168.1.96";           // 到時再說
-    double ReaderPower = 32, Sensitive = -70;   // 功率, 敏感度
-    bool Flag_ToConnectTheReade = false;        // false就不會連reader
+    readonly short[] EnableAntenna = {1, 2, 3, 4};       // reader port
+    readonly string ReaderIP = "192.168.1.96";           // 到時再說
+    readonly double ReaderPower = 32, Sensitive = -70;   // 功率, 敏感度
+    readonly bool Flag_ToConnectTheReade = false;        // false就不會連reader
 
-    bool showSysMesg = true;
-    bool showReceiveTag = true;
-    bool showDebugMesg = true;
+    readonly bool showSysMesg = true;
+    readonly bool showReceiveTag = true;
+    readonly bool showDebugMesg = true;
 
-    string sysTagBased = "8940 0000";           // 允許的系統編號
+    readonly string sysTagBased = "8940 0000";           // 允許的系統編號
 
-    int refreshTime = 600;                      // clear beffer
-    int disappearTime = 400;                    // id 消失多久才會的消失
-    int delayForReceivingTime = 200;            // 清空之後停多久才收id
+    readonly int refreshTime = 600;                      // clear beffer
+    readonly int disappearTime = 400;                    // id 消失多久才會的消失
+    readonly int delayForReceivingTime = 200;            // 清空之後停多久才收id
 
     #endregion
 

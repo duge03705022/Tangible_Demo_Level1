@@ -8,9 +8,10 @@ public class CardHandler : MonoBehaviour
     public GameController gameController;
     public LevelParameter levelParameter;
 
-    # region Card Parameter
-    //public bool setCardTrans;
+    //待改善
+    public LevelControllerStage1 levelControllerStage1;
 
+    #region Card Parameter
     public GameObject parentTransform;
     public GameObject[] cards;
 
@@ -30,8 +31,6 @@ public class CardHandler : MonoBehaviour
         cardInstance = new GameObject[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
         hasPlaced = new bool[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
         lastBlockId = new string[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
-        
-        //setCardTrans = true;
 
         for (int i = 0; i < RFIBParameter.stageCol; i++)
         {
@@ -73,17 +72,11 @@ public class CardHandler : MonoBehaviour
                         {
                             DestroyCard(i, j, k);
                         }
-
                         lastBlockId[i, j, k] = rFIBManager.blockId[i, j, k];
                     }
                 }
             }
         }
-
-        //if (setCardTrans)
-        //{
-        //    setCardTrans = false;
-        //}
     }
 
     private void PlaceCard(int x, int y, int z)
@@ -96,6 +89,9 @@ public class CardHandler : MonoBehaviour
         cardInstance[x, y, z].GetComponent<SpriteRenderer>().sortingOrder = GameParameter.cardOrderInLayer + z;
 
         hasPlaced[x, y, z] = true;
+
+        //待改善
+        levelControllerStage1.SetBugs(false);
     }
 
     private void DestroyCard(int x, int y, int z)
@@ -103,6 +99,9 @@ public class CardHandler : MonoBehaviour
         Destroy(cardInstance[x, y, z]);
         cardInstance[x, y, z] = null;
         hasPlaced[x, y, z] = false;
+
+        //待改善
+        levelControllerStage1.SetBugs(false);
     }
 
     public void SetCanPlaceCard(string[] posSeries, bool TorF)
@@ -111,6 +110,27 @@ public class CardHandler : MonoBehaviour
         {
             string[] newPosXY = posSeries[i].Split(',');
             canPlaceCard[int.Parse(newPosXY[0]), int.Parse(newPosXY[1]), 0] = TorF;
+        }
+    }
+
+    public void SetCardTrans(bool TorF)
+    {
+        for (int i = 0; i < RFIBParameter.stageCol; i++)
+        {
+            for (int j = 0; j < RFIBParameter.stageRow; j++)
+            {
+                for (int k = 0; k < RFIBParameter.maxHight; k++)
+                {
+                    if (hasPlaced[i, j, k] && TorF)
+                    {
+                        cardInstance[i, j, k].GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+                    }
+                    else if (hasPlaced[i, j, k])
+                    {
+                        cardInstance[i, j, k].GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                    }
+                }
+            }
         }
     }
 }
