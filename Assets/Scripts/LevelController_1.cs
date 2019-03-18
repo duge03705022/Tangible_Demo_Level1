@@ -5,8 +5,10 @@ using UnityEngine;
 public class LevelController_1 : MonoBehaviour
 {
     # region Level Parameter
+    public RFIBManager rFIBManager;
     public GameController gameController;
     public CardHandler cardHandler;
+    public LevelParameter levelParameter;
 
     public int startX;
     public int startY;
@@ -19,7 +21,7 @@ public class LevelController_1 : MonoBehaviour
 
     //public GameObject[] levelCards;
     public GameObject[] hints;
-    public int[] availablePlace;
+    //public int[] availablePlace;
     public int[] answer;
 
     private bool gameFail;
@@ -29,7 +31,7 @@ public class LevelController_1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cardHandler.setCanPlaceCard(availablePlace, true);
+        //cardHandler.SetCanPlaceCard(availablePlace, true);
 
         ResetDish();
     }
@@ -109,7 +111,8 @@ public class LevelController_1 : MonoBehaviour
 
     IEnumerator CheckProcess(int chefNum)
     {
-        if (cardHandler.stackSensing[availablePlace[chefNum] % GameParameter.stageCol, availablePlace[chefNum] / GameParameter.stageCol, 0] == answer[chefNum])
+        string[] chefPosXY = levelParameter.canPlaceCardPos[chefNum].Split(',');
+        if (RFIBParameter.SearchCard(rFIBManager.blockId[int.Parse(chefPosXY[0]), int.Parse(chefPosXY[1]), 0]) == answer[chefNum])
         {
             ingredientStep[chefNum].SetActive(false);
             chef[chefNum].SendMessage("StartAct");
@@ -128,7 +131,7 @@ public class LevelController_1 : MonoBehaviour
         Debug.Log("Game Finish!!!");
 
         gameController.playing = false;
-        cardHandler.setCardTrans = true;
+        //cardHandler.setCardTrans = true;
         SetHints(true);
     }
 
@@ -139,7 +142,7 @@ public class LevelController_1 : MonoBehaviour
 
         gameFail = true;
         gameController.playing = false;
-        cardHandler.setCardTrans = true;
+        //cardHandler.setCardTrans = true;
         SetHints(true);
         ResetDish();
     }

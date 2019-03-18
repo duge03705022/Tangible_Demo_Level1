@@ -40,7 +40,7 @@ public class GameController : MonoBehaviour
                     {
                         levelController.SendMessage("StartCooking");
                         playing = true;
-                        cardHandler.setCardTrans = true;
+                        //cardHandler.setCardTrans = true;
                     }
                 }
             }

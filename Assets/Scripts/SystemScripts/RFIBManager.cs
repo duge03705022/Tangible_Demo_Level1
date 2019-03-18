@@ -4,49 +4,60 @@ using UnityEngine;
 using System;
 using System.Linq;
 
+// 編號規則:
+// 系統編號 此欄空白 方塊種類 編號+上下 方向
+
 public class RFIBManager : MonoBehaviour
 {
-    #region Block & Touch Setting
-    // 允許甚麼編號被接受
-    static string[] AllowBlockType = {
-        "9999"  // 99 floor
-	};
-
-    #endregion
-
-    #region RFID parameter
     RFIBricks_Cores RFIB;
-    short[] EnableAntenna = {1, 2, 3, 4};       //reader port
-    string ReaderIP = "192.168.1.96";           //到時再說
-    double ReaderPower = 32, Sensitive = -70;   //功率, 敏感度
-    bool Flag_ToConnectTheReade = false;        //false就不會連reader
+    public CardHandler cardHandler;
+    public BlockController blockController;
+
+    #region RFIB parameter
+    short[] EnableAntenna = {1, 2, 3, 4};       // reader port
+    string ReaderIP = "192.168.1.96";           // 到時再說
+    double ReaderPower = 32, Sensitive = -70;   // 功率, 敏感度
+    bool Flag_ToConnectTheReade = false;        // false就不會連reader
+
+    bool showSysMesg = true;
+    bool showReceiveTag = true;
+    bool showDebugMesg = true;
+
+    string sysTagBased = "8940 0000";           // 允許的系統編號
+
+    int refreshTime = 600;                      // clear beffer
+    int disappearTime = 400;                    // id 消失多久才會的消失
+    int delayForReceivingTime = 200;            // 清空之後停多久才收id
 
     #endregion
 
-    public CardHandler cardHandler;
+    public string[,,] blockId;
 
-    // 編號規則:
-    // 系統編號 此欄空白 方塊種類 編號+上下 方向
-    
     void Start()
     {
+        #region Set RFIB Parameter
         RFIB = new RFIBricks_Cores(ReaderIP, ReaderPower, Sensitive, EnableAntenna, Flag_ToConnectTheReade);
-        RFIB.setShowSysMesg(true);
-        RFIB.setShowReceiveTag(true);
-        RFIB.setShowDebugMesg(true);
+        RFIB.setShowSysMesg(showSysMesg);
+        RFIB.setShowReceiveTag(showReceiveTag);
+        RFIB.setShowDebugMesg(showDebugMesg);
 
-        RFIB.setSysTagBased("8940 0000");       // 允許的系統編號
-        RFIB.setAllowBlockType(AllowBlockType);
+        RFIB.setSysTagBased(sysTagBased);
+        RFIB.setAllowBlockType(RFIBParameter.AllowBlockType);
 
-        RFIB.setRefreshTime(600);               // clear beffer
-        RFIB.setDisappearTime(400);             // id 消失多久才會的消失
-        RFIB.setDelayForReceivingTime(200);     // 清空之後停多久才收id
+        RFIB.setRefreshTime(refreshTime);
+        RFIB.setDisappearTime(disappearTime);
+        RFIB.setDelayForReceivingTime(delayForReceivingTime);
 
-        BoardMapping();                         // 開始接收ID前要將地板配對
+        // 開始接收ID前要將地板配對
+        BoardMapping();
 
         RFIB.startReceive();
         RFIB.startToBuild();
         RFIB.printNoiseIDs();
+
+        #endregion
+
+        blockId = new string[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
     }
 
     // Update is called once per frame
@@ -69,9 +80,9 @@ public class RFIBManager : MonoBehaviour
         //-------／-----------------------------------------------
         //   y ／x | [00] [01] [02] [03] [04] [05] [06] [07] [08] 
 
-        for (int i = 0; i < GameParameter.blockNum; i++)
+        for (int i = 0; i < RFIBParameter.blockNum; i++)
         {
-            string pos = "0" + (i % GameParameter.stageCol).ToString() + "0" + (i / GameParameter.stageCol).ToString();
+            string pos = "0" + (i % RFIBParameter.stageCol).ToString() + "0" + (i / RFIBParameter.stageCol).ToString();
             RFIB.setBoardBlockMappingArray(i, pos);
         }
     }
@@ -79,35 +90,22 @@ public class RFIBManager : MonoBehaviour
     private void StackSensing()
     {
         // 偵測每格地板上堆疊了幾個方塊，並把數值更新到相對應的stackSensing表格
-        //for (int i = 0; i < GameParameter.blockNum; i++)
-        //{
-        //    string[] idStack = new string[3] { "0000", "0000", "0000" };
-        //    //string[] idDirection = new string[3] { "000000", "000000", "000000" };
-
-        //    idStack[0] = GetBlockInfoXYZ(i % GameParameter.stageCol, i / GameParameter.stageCol, 0, "BlockIDType");
-        //    //idDirection[0] = GetBlockInfoXYZ(i % GameParameter.stageCol, i / GameParameter.stageCol, 0, "StackWay");
-        //    if (idStack[0] != "0000")
-        //    {
-
-        //    }
-        //}
-
-        for (int i = 0; i < GameParameter.stageCol; i++)
+        for (int i = 0; i < RFIBParameter.stageCol; i++)
         {
-            for (int j = 0; j < GameParameter.stageRow; j++)
+            for (int j = 0; j < RFIBParameter.stageRow; j++)
             {
-                for (int k = 0; k < GameParameter.maxHight; k++)
+                for (int k = 0; k < RFIBParameter.maxHight; k++)
                 {
                     string idStack = "0000";
                     idStack = GetBlockInfoXYZ(i, j, k, "BlockIDType");
 
                     if (idStack != "0000")
                     {
-                        cardHandler.stackSensing[i, j, k] = CardDictionary.SearchCard(idStack);
+                        blockId[i, j, k] = idStack;
                     }
                     else
                     {
-                        cardHandler.stackSensing[i, j, k] = -1;
+                        blockId[i, j, k] = "0000";
                     }
                 }
             }
@@ -116,11 +114,30 @@ public class RFIBManager : MonoBehaviour
 
     private void TouchSensing()
     {
-
+        Stack<string> touchShow = Arduino.touchShowID;
+        Stack<string> touchShow2 = Arduino2.touchShowID;
+        while (touchShow.Count() > 0)
+        {
+            blockController.touchStr = touchShow.Pop();
+        }
+        while (touchShow2.Count() > 0)
+        {
+            blockController.touchStr2 = touchShow2.Pop();
+        }
     }
 
     public void KeyPressed()
     {
+        if (Input.GetKeyUp("1"))
+        {
+            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0301 0001", "8940 0000 7101 0101 0001");
+        }
+        if (Input.GetKeyUp("2"))
+        {
+            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0501 0001", "8940 0000 7201 0201 0001");
+        }
+
+        #region Information
         if (Input.GetKeyUp("="))
             RFIB.StopReader();
         if (Input.GetKeyUp("["))
@@ -138,15 +155,8 @@ public class RFIBManager : MonoBehaviour
             Debug.Log("StackWay: " + GetBlockInfoXYZ(0, 1, 1, "StackWay"));
             Debug.Log("BlockIDType: " + GetBlockInfoXYZ(0, 1, 1, "BlockIDType"));
         }
-                
-        if (Input.GetKeyUp("1"))
-        {
-            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0301 0001", "8940 0000 7101 0101 0001");
-        }
-        if (Input.GetKeyUp("2"))
-        {
-            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0501 0001", "8940 0000 7201 0201 0001");
-        }
+
+        #endregion
     }
 
     public string GetBlockInfoXYZ(int X, int Y, int Z, string TARGET)

@@ -4,50 +4,49 @@ using UnityEngine;
 
 public class CardHandler : MonoBehaviour
 {
-    # region Card Parameter
+    public RFIBManager rFIBManager;
     public GameController gameController;
-    public bool setCardTrans;
+    public LevelParameter levelParameter;
+
+    # region Card Parameter
+    //public bool setCardTrans;
 
     public GameObject parentTransform;
-
     public GameObject[] cards;
 
-    public bool[] canPlaceCard;
-    public int[,,] stackSensing;
+    public bool[,,] canPlaceCard;
 
-    public bool[] waitDestroy;
-
-    private GameObject[] cardInstance;
-    public int[] lastStack;
-    private bool[] hasPlaced;
+    private GameObject[,,] cardInstance;
+    public string[,,] lastBlockId;
+    private bool[,,] hasPlaced;
 
     # endregion
 
     // Start is called before the first frame update
     void Start()
     {
-        canPlaceCard = new bool[GameParameter.blockNum];
-        stackSensing = new int[GameParameter.stageCol, GameParameter.stageRow, GameParameter.maxHight];
+        canPlaceCard = new bool[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
+        
+        cardInstance = new GameObject[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
+        hasPlaced = new bool[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
+        lastBlockId = new string[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
+        
+        //setCardTrans = true;
 
-        waitDestroy = new bool[GameParameter.blockNum];
-
-        cardInstance = new GameObject[GameParameter.blockNum];
-        lastStack = new int[GameParameter.blockNum];
-        hasPlaced = new bool[GameParameter.blockNum];
-
-        setCardTrans = true;
-
-        for (int i = 0; i < GameParameter.blockNum; i++)
+        for (int i = 0; i < RFIBParameter.stageCol; i++)
         {
-            canPlaceCard[i] = false;
-            waitDestroy[i] = false;
-            hasPlaced[i] = false;
-
-            for (int k = 0; k < GameParameter.maxHight; k++)
+            for (int j = 0; j < RFIBParameter.stageRow; j++)
             {
-                stackSensing[i % GameParameter.stageCol, i / GameParameter.stageCol, k] = -1;
-            }
+                for (int k = 0; k < RFIBParameter.maxHight; k++)
+                {
+                    canPlaceCard[i, j, k] = false;
+                    hasPlaced[i, j, k] = false;
+                    lastBlockId[i, j, k] = "0000";
+                }
+            } 
         }
+
+        SetCanPlaceCard(levelParameter.canPlaceCardPos, true);
     }
 
     // Update is called once per frame
@@ -58,61 +57,60 @@ public class CardHandler : MonoBehaviour
 
     private void updateCards()
     {
-        for (int i = 0; i < GameParameter.blockNum; i++)
+        for (int i = 0; i < RFIBParameter.stageCol; i++)
         {
-            if (stackSensing[i % GameParameter.stageCol, i / GameParameter.stageCol, 0] != -1 && canPlaceCard[i] && !hasPlaced[i])
+            for (int j = 0; j < RFIBParameter.stageRow; j++)
             {
-                placeCard(i);
-            }
-            else if ((waitDestroy[i] || stackSensing[i % GameParameter.stageCol, i / GameParameter.stageCol, 0] == -1) && hasPlaced[i])
-            {
-                destroyCard(i);
-            }
-            
-            if (setCardTrans && gameController.playing && hasPlaced[i])
-            {
-                cardInstance[i].GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
-            }
-            else if (setCardTrans && !gameController.playing && hasPlaced[i])
-            {
-                cardInstance[i].GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                for (int k = 0; k < RFIBParameter.maxHight; k++)
+                {
+                    if (lastBlockId[i, j, k] != rFIBManager.blockId[i, j, k] && canPlaceCard[i, j, k])
+                    {
+                        if (rFIBManager.blockId[i, j, k] != "0000")
+                        {
+                            PlaceCard(i, j, k);
+                        }
+                        else
+                        {
+                            DestroyCard(i, j, k);
+                        }
+
+                        lastBlockId[i, j, k] = rFIBManager.blockId[i, j, k];
+                    }
+                }
             }
         }
 
-        if (setCardTrans)
-        {
-            setCardTrans = false;
-        }
+        //if (setCardTrans)
+        //{
+        //    setCardTrans = false;
+        //}
     }
 
-    private void placeCard(int num)
+    private void PlaceCard(int x, int y, int z)
     {
-        cardInstance[num] = Instantiate(cards[stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0]], parentTransform.transform);
-        cardInstance[num].transform.localPosition = new Vector3(
-            num % GameParameter.stageCol * GameParameter.stageGap,
-            num / GameParameter.stageCol * GameParameter.stageGap,
+        cardInstance[x, y, z] = Instantiate(cards[RFIBParameter.SearchCard(rFIBManager.blockId[x, y, z])], parentTransform.transform);
+        cardInstance[x, y, z].transform.localPosition = new Vector3(
+            x * GameParameter.stageGap,
+            y * GameParameter.stageGap,
             0);
-        hasPlaced[num] = true;
-        lastStack[num] = stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0];
+        cardInstance[x, y, z].GetComponent<SpriteRenderer>().sortingOrder = GameParameter.cardOrderInLayer + z;
+
+        hasPlaced[x, y, z] = true;
     }
 
-    private void destroyCard(int num)
+    private void DestroyCard(int x, int y, int z)
     {
-        Destroy(cardInstance[num]);
-        cardInstance[num] = null;
-        hasPlaced[num] = false;
-        if (stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0] == lastStack[num])
-        {
-            stackSensing[num % GameParameter.stageCol, num / GameParameter.stageCol, 0] = -1;
-        }
-        waitDestroy[num] = false;
+        Destroy(cardInstance[x, y, z]);
+        cardInstance[x, y, z] = null;
+        hasPlaced[x, y, z] = false;
     }
 
-    public void setCanPlaceCard(int[] series, bool TorF)
+    public void SetCanPlaceCard(string[] posSeries, bool TorF)
     {
-        for (int i = 0; i < series.Length; i++)
+        for (int i = 0; i < posSeries.Length; i++)
         {
-            canPlaceCard[series[i]] = TorF;
+            string[] newPosXY = posSeries[i].Split(',');
+            canPlaceCard[int.Parse(newPosXY[0]), int.Parse(newPosXY[1]), 0] = TorF;
         }
     }
 }

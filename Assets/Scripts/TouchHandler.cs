@@ -9,15 +9,13 @@ public class TouchHandler : MonoBehaviour
 
     # endregion
 
-    public TouchHandler touchHandler;
-
     // Start is called before the first frame update
     void Start()
     {
-        touchSensing = new bool[GameParameter.stageCol * 3, GameParameter.stageRow * 3];
-        for (int i = 0; i < GameParameter.stageCol * 3; i++)
+        touchSensing = new bool[RFIBParameter.stageCol * 3, RFIBParameter.stageRow * 3];
+        for (int i = 0; i < RFIBParameter.stageCol * 3; i++)
         {
-            for (int j = 0; j < GameParameter.stageRow * 3; j++)
+            for (int j = 0; j < RFIBParameter.stageRow * 3; j++)
             {
                 touchSensing[i, j] = false;
             }
@@ -29,11 +27,11 @@ public class TouchHandler : MonoBehaviour
     {
         if (Input.GetKeyDown("p"))
         {
-            touchHandler.touchSensing[25, 1] = true;
+            touchSensing[25, 1] = true;
         }
         if (Input.GetKeyUp("p"))
         {
-            touchHandler.touchSensing[25, 1] = false;
+            touchSensing[25, 1] = false;
         }
     }
 }
