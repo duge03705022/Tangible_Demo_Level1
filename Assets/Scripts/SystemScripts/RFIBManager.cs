@@ -32,6 +32,7 @@ public class RFIBManager : MonoBehaviour
     #endregion
 
     public string[,,] blockId;
+    public bool[,] touchBlock;
 
     void Start()
     {
@@ -58,6 +59,25 @@ public class RFIBManager : MonoBehaviour
         #endregion
 
         blockId = new string[RFIBParameter.stageCol, RFIBParameter.stageRow, RFIBParameter.maxHight];
+        touchBlock = new bool[RFIBParameter.touchCol, RFIBParameter.touchRow];
+
+        for (int i = 0; i < RFIBParameter.stageCol; i++)
+        {
+            for (int j = 0; j < RFIBParameter.stageRow; j++)
+            {
+                for (int k = 0; k < RFIBParameter.maxHight; k++)
+                {
+                    blockId[i, j, k] = "0000";
+                }
+            }
+        }
+        for (int i = 0; i < RFIBParameter.touchCol; i++)
+        {
+            for (int j = 0; j < RFIBParameter.touchRow; j++)
+            {
+                touchBlock[i, j] = false;
+            }
+        }
     }
 
     // Update is called once per frame
@@ -114,27 +134,65 @@ public class RFIBManager : MonoBehaviour
 
     private void TouchSensing()
     {
-        Stack<string> touchShow = Arduino.touchShowID;
-        Stack<string> touchShow2 = Arduino2.touchShowID;
-        while (touchShow.Count() > 0)
-        {
-            blockController.touchStr = touchShow.Pop();
-        }
-        while (touchShow2.Count() > 0)
-        {
-            blockController.touchStr2 = touchShow2.Pop();
-        }
+        
     }
 
+    bool tmpFlag1 = false;
+    bool tmpFlag2 = false;
+    bool tmpFlag3 = false;
+    bool tmpFlag4 = false;
     public void KeyPressed()
     {
         if (Input.GetKeyUp("1"))
         {
-            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0301 0001", "8940 0000 7101 0101 0001");
+            tmpFlag1 = true;
         }
         if (Input.GetKeyUp("2"))
         {
+            tmpFlag1 = false;
+        }
+        if (tmpFlag1)
+        {
+            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0101 0001", "8940 0000 8001 0301 0001");
+        }
+
+        if (Input.GetKeyUp("3"))
+        {
+            tmpFlag2 = true;
+        }
+        if (Input.GetKeyUp("4"))
+        {
+            tmpFlag2 = false;
+        }
+        if (tmpFlag2)
+        {
+            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0301 0001", "8940 0000 7101 0101 0001");
+        }
+
+        if (Input.GetKeyUp("5"))
+        {
+            tmpFlag3 = true;
+        }
+        if (Input.GetKeyUp("6"))
+        {
+            tmpFlag3 = false;
+        }
+        if (tmpFlag3)
+        {
             RFIB._Testing_AddTestingTemporarilyTag("8940 0000 9999 0501 0001", "8940 0000 7201 0201 0001");
+        }
+
+        if (Input.GetKeyUp("q"))
+        {
+            tmpFlag4 = true;
+        }
+        if (Input.GetKeyUp("w"))
+        {
+            tmpFlag4 = false;
+        }
+        if (tmpFlag4)
+        {
+            RFIB._Testing_AddTestingTemporarilyTag("8940 0000 8001 0303 0001", "8940 0000 9001 0401 0001");
         }
 
         #region Information
@@ -145,7 +203,6 @@ public class RFIBManager : MonoBehaviour
         if (Input.GetKeyUp(";"))
         {
             RFIB.printStackedOrders();
-            Debug.Log(GetBlockInfoXYZ(3, 1, 0, "BlockIDType"));
         }
         if (Input.GetKeyUp("."))
         {

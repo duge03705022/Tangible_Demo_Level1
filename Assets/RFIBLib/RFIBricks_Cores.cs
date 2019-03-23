@@ -2705,7 +2705,7 @@ public class RFIBricks_Cores
 			Debug.Log("(" + i + ") " + ("" + StackedOrders[i]));
 		}
 		Debug.Log("=====================================================\n");
-		Debug.Log(xx);
+		//Debug.Log(xx);
 	}
 	public void printNewIDs()
 	{

@@ -7,6 +7,7 @@ using System.Text;
 
 public class BlockController : MonoBehaviour
 {
+    public RFIBManager rFIBManager;
     public TouchHandler touchHandler;
     public GameObject parentCanvas;
     public int blockSeriesRow;
@@ -191,7 +192,7 @@ public class BlockController : MonoBehaviour
             touchedColBlock = touchedCol;
             touchedRowBlock = touchedRow;
 
-            touchHandler.touchSensing[touchedColBlock, touchedRowBlock] = true;
+            rFIBManager.touchBlock[touchedColBlock, touchedRowBlock] = true;
         }
         else
         {
@@ -202,7 +203,7 @@ public class BlockController : MonoBehaviour
             {
                 for (int j = 0; j < RFIBParameter.stageRow; j++)
                 {
-                    touchHandler.touchSensing[i, j] = false;
+                    rFIBManager.touchBlock[i, j] = false;
                 }
             }
         }

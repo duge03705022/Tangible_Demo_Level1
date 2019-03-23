@@ -9,7 +9,7 @@ public class CardHandler : MonoBehaviour
     public LevelParameter levelParameter;
 
     //待改善
-    public LevelControllerStage1 levelControllerStage1;
+    public LevelController levelController;
 
     #region Card Parameter
     public GameObject parentTransform;
@@ -91,7 +91,7 @@ public class CardHandler : MonoBehaviour
         hasPlaced[x, y, z] = true;
 
         //待改善
-        levelControllerStage1.SetBugs(false);
+        levelController.SetBugs(false);
     }
 
     private void DestroyCard(int x, int y, int z)
@@ -101,15 +101,15 @@ public class CardHandler : MonoBehaviour
         hasPlaced[x, y, z] = false;
 
         //待改善
-        levelControllerStage1.SetBugs(false);
+        levelController.SetBugs(false);
     }
 
     public void SetCanPlaceCard(string[] posSeries, bool TorF)
     {
         for (int i = 0; i < posSeries.Length; i++)
         {
-            string[] newPosXY = posSeries[i].Split(',');
-            canPlaceCard[int.Parse(newPosXY[0]), int.Parse(newPosXY[1]), 0] = TorF;
+            string[] newPosXYZ = posSeries[i].Split(',');
+            canPlaceCard[int.Parse(newPosXYZ[0]), int.Parse(newPosXYZ[1]), int.Parse(newPosXYZ[2])] = TorF;
         }
     }
 

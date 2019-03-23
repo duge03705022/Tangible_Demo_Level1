@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelControllerStage1 : MonoBehaviour
+public class LevelController : MonoBehaviour
 {
     # region Level Parameter
     public RFIBManager rFIBManager;
     public GameController gameController;
     public CardHandler cardHandler;
     public LevelParameter levelParameter;
+
+    public GameObject levelProcess;
 
     public int startX;
     public int startY;
@@ -23,7 +25,7 @@ public class LevelControllerStage1 : MonoBehaviour
     public GameObject[] bugs;
     public int[] answer;
 
-    private bool gameFail;
+    public bool gameFail;
 
     # endregion
 
@@ -49,7 +51,7 @@ public class LevelControllerStage1 : MonoBehaviour
         StartCoroutine(CookingProcess());
     }
 
-    private void FinishCooking()
+    public void FinishCooking()
     {
         basket.SetActive(false);
         Debug.Log("Game Finish!!!");
@@ -100,7 +102,7 @@ public class LevelControllerStage1 : MonoBehaviour
         }
     }
 
-    IEnumerator DishMove(string direction, int step)
+    public IEnumerator DishMove(string direction, int step)
     {
         for (int i = 0; i < step * 75; i++)
         {
@@ -126,7 +128,7 @@ public class LevelControllerStage1 : MonoBehaviour
         }
     }
 
-    IEnumerator CheckProcess(int chefNum)
+    public IEnumerator CheckProcess(int chefNum)
     {
         string[] chefPosXY = levelParameter.canPlaceCardPos[chefNum].Split(',');
         if (RFIBParameter.SearchCard(rFIBManager.blockId[int.Parse(chefPosXY[0]), int.Parse(chefPosXY[1]), 0]) == answer[chefNum])

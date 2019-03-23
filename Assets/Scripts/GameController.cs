@@ -5,14 +5,12 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     # region Game Parameter
+    public RFIBManager rFIBManager;
     public TouchHandler touchHandler;
     public CardHandler cardHandler;
     public GameObject levelController;
 
     public bool playing;
-
-    public int playBtnX;
-    public int playBtnY;
 
     # endregion
 
@@ -25,24 +23,6 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ifPlay();
-    }
 
-    private void ifPlay()
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (touchHandler.touchSensing[playBtnX * 3 + i, playBtnY * 3 + j])
-                {
-                    if (!playing)
-                    {
-                        levelController.SendMessage("StartCooking");
-                        playing = true;
-                    }
-                }
-            }
-        }
     }
 }
