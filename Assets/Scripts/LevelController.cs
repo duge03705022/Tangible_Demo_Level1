@@ -27,6 +27,8 @@ public class LevelController : MonoBehaviour
 
     public bool gameFail;
 
+    public GameObject finishPage;
+
     # endregion
 
     // Start is called before the first frame update
@@ -55,6 +57,8 @@ public class LevelController : MonoBehaviour
     {
         basket.SetActive(false);
         Debug.Log("Game Finish!!!");
+
+        finishPage.SetActive(true);
 
         gameController.playing = false;
         cardHandler.SetCardTrans(false);
